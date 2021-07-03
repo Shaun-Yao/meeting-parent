@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hello, Bootstrap Table!</title>
+
+    <link rel="stylesheet" href="/AdminLTE-2.4.18/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-table/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-select/1.13.17/css/bootstrap-select.min.css" />
+</head>
+<body>
+<table id="table" class="modal-body">
+
+</table>
+<div id="room" >
+    <button type="button" class="btn btn-success" id="add">新增</button>
+    <button type="button" class="btn btn-danger" id="remove">删除</button>
+
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">参与人信息</h4>
+            </div>
+            <form class="form-horizontal" id="form" role="form" action="/room/add" method="post">
+                <input type="hidden" name="id" id="id" />
+
+                <div class="form-group">
+                    <label for="userId" class="col-sm-2 control-label">报名号</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="userId" name="userId" required >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">房型</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline" th:each="type : ${T(com.honji.meeting.enums.RoomTypeEnum).values()}">
+                            <input type="radio" name="type" th:value="${type}" th:roomType="${type.desc}" th:text="${type.desc}">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name1" class="col-sm-2 control-label">人员1</label>
+                    <div class="col-sm-9">
+                        <select name="participants[0].id" id="name1" class="selectpicker" required
+                                data-live-search="true" data-actions-box="true">
+                            <!--<option></option>
+                            <option th:each="participant : ${participants}"
+                                    th:value="${participant.id}" th:text="${participant.name}">
+                            </option>-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name2" class="col-sm-2 control-label">人员2</label>
+                    <div class="col-sm-9">
+                        <select name="participants[1].id" id="name2" class="selectpicker" required
+                                data-live-search="true" data-actions-box="true">
+                            <!--<option></option>
+                            <option th:each="participant : ${participants}"
+                                    th:value="${participant.id}" th:text="${participant.name}">
+                            </option>-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name3" class="col-sm-2 control-label">人员3(只能选儿童)</label>
+                    <div class="col-sm-9">
+                        <select name="participants[2].id" id="name3" class="selectpicker">
+                            <!--<option></option>
+                            <option th:each="child : ${children}"
+                                    th:value="${child.id}" th:text="${child.name}">
+                            </option>-->
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="save" class="btn btn-primary">提交更改</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- jQuery 3 -->
+<script src="/AdminLTE-2.4.18/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="/AdminLTE-2.4.18/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"></script>
+<script src="/webjars/bootstrap-table/dist/bootstrap-table.min.js"></script>
+<script src="/webjars/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/webjars/bootbox.js/5.1.3/dist/bootbox.min.js"></script>
+<script src="/webjars/bootstrap-select/1.13.17/js/bootstrap-select.min.js"></script>
+<script src="/webjars/bootstrap-select/1.13.17/js/i18n/defaults-zh_CN.min.js"></script>
+</body>
+
+
+<script th:inline="javascript">
+
+    $(function(){
+
+        $('.selectpicker').selectpicker();
+
+        $('#table').bootstrapTable({
+            url: '/room/list',
+            pagination: true,
+            sidePagination: "server",
+            locale: 'zh-CN',
+            search: true,
+            showButtonText: true,
+            searchOnEnterKey: true,
+            showSearchButton: true,
+            showSearchClearButton: true,
+            showRefresh: true,
+            toolbar: "#room",
+            //showRefresh: true,
+            clickToSelect: true,
+            sortable: true,
+            smartDisplay: false,
+            pageNumber: 1,     //初始化加载第一页，默认第一页
+            pageSize: 10,      //每页的记录行数（*）
+            queryParams: function (params) {
+                // var param = {
+                        //获取页码，每页数量
+                //     page : this.pageNumber,
+                //     size : this.pageSize
+                // }
+                //默认传4个参数
+                // var params = {
+                //     offset : 0,
+                //     limit : 10,
+                //     order: asc,
+                //     search: ''
+                // }
+                return params;
+            },
+            onClickRow: function (row, $element) {
+                //console.log(row.id);
+            },
+            onDblClickRow: function (row, $element) {
+                $("#name1").empty();
+                $("#name2").empty();
+                $("#name3").empty();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/participant/listForEdit?roomId=" + row.id,
+                    async: false,
+                    success: function(data){
+                        $.each(data, function(index, participant){
+                            $("#name1").append("<option value='" + participant.id + "'>" + participant.name + "</option>");
+                            $("#name2").append("<option value='" + participant.id + "'>"
+                                + participant.name + "</option>");
+                            if (participant.sex === '儿童') {
+                                $("#name3").append("<option value='" + participant.id + "'>"
+                                    + participant.name + "</option>");
+                            }
+                        });
+
+                    }
+                });
+
+                $.ajax({
+                    type: "GET",
+                    url: "/room/get?id=" + row.id,
+                    async: false,
+                    success: function(data){
+                       $('#form').clearForm();
+                        $('#id').val(data.id);
+                        $('#userId').val(data.userId);//根据自定义属性值选中
+                        $("input:radio[name=type][roomType=" + data.type + "]")[0].checked=true;
+                        $("#name1 option[value=" + data.participants[0].id + "]")[0].selected=true;
+                        $("#name2 option[value=" + data.participants[1].id + "]")[0].selected=true;
+                        if (data.participants.length > 2 ) {
+                            $("#name3 option[value=" + data.participants[2].id + "]")[0].selected=true;
+                        }
+
+                    }
+                });
+                //添加选项或者设置selected都需要refresh
+                $('.selectpicker').selectpicker('refresh');
+                $('#myModal').modal('show');
+            },
+            columns: [ {
+                field: '',
+                checkbox: true, // 显示一个勾选框
+                align: 'center', // 居中显示
+
+                formatter: function (value, row, index) {
+                    return row.id;
+                }
+            },{
+                field: 'id',
+                title: 'ID',
+                visible: false
+            }, {
+                field: 'userId',
+                title: '报名号'
+            }, {
+                field: 'shopCode',
+                title: '店铺代码'
+            }, {
+                field: 'shopName',
+                title: '店铺名称'
+            }, {
+                field: 'type',
+                title: '房间类型'
+            }, {
+                field: 'userNames',
+                title: '同住人'
+            }]
+        });
+
+        $('.search-input').attr('placeholder', '报名号/店铺代码/名称/姓名');
+
+        $('#table').bootstrapTable('mergeCells', {index: 0, field: 'userId', colspan: 2, rowspan: 2});
+        $('#save').click(function() {
+            if($('#form')[0].reportValidity()) {
+                var name1 = $('#name1').val();
+                var name2 = $('#name2').val();
+                var name3 = $('#name3').val();
+                if (name1 == name2 || name1 == name3 || name2 == name3) {
+                    alert("不能重复选择同一个人！");
+                    return;
+                }
+
+                $.ajax({
+                    type: "get",
+                    url: "/user/get?id=" + $('#userId').val(),
+                    success: function(data){
+                        if (data.length == 0) {
+                            alert("报名号不存在！");
+                        } else {
+                            $.ajax({
+                                type: "post",
+                                url: "/room/save",
+                                data: $('#form').serialize(),
+                                success: function(data){
+                                    $('#myModal').modal('hide');
+                                    $('#table').bootstrapTable('refresh');
+                                },
+                                error: function(data){
+                                    alert("操作失败！");
+                                }
+                            });
+                        }
+                    }
+                });
+
+            }
+        });
+
+        $('#add').click(function () {
+            //console.log($("#arrivedPickUpStation option:eq(1)").val());
+            $('#id').val('');
+            $('#form').resetForm();//无法重置hidden项
+            $("input:radio[name=type]").get(0).checked=true;
+            $("#name1").empty();
+            $("#name2").empty();
+            $("#name3").empty();
+            $("#name1").append("<option></option>");
+            $("#name2").append("<option></option>");
+            $("#name3").append("<option></option>");
+
+            $.ajax({
+                type: "GET",
+                url: "/participant/listAvailable",
+                async: false,
+                success: function(data){
+                    $.each(data, function(index, participant){
+                        $("#name1").append("<option value='" + participant.id + "'>"
+                            + participant.name + "</option>");
+                        $("#name2").append("<option value='" + participant.id + "'>"
+                            + participant.name + "</option>");
+                        if (participant.sex === '儿童') {
+                            $("#name3").append("<option value='" + participant.id + "'>"
+                                + participant.name + "</option>");
+                        }
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            });
+
+            $('#myModal').modal('show');
+        });
+
+        $('#remove').click(function () {
+            // console.log($('#table').bootstrapTable('getSelections')[0].id);
+            // if($('#dg').datagrid('getSelected') == null) {
+            //     return;
+            // }
+            var ids = [];
+            $.each($('#table').bootstrapTable('getSelections'), function(index, item){
+                //console.log(item.id);
+                ids.push(item.id);
+            });
+            bootbox.confirm("确认删除？",
+                function(result){
+                    if(result) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/room/remove",
+                            traditional: true,
+                            //async: false,
+                            data: {
+                                ids: ids
+                            },
+                            success: function(data){
+                                $('#table').bootstrapTable('refresh');
+                            },
+                            error:function(){
+                                alert("操作失败，请刷新页面重新尝试！");
+                            }
+                        });
+                    }
+                })
+        });
+
+    });
+
+    function initParticipants() {
+
+    }
+
+</script>
+</html>

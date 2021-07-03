@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订货会智能会务系统</title>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/weui/weui.min.js"></script>
+    <link rel="stylesheet" href="/weui/weui.min.css" />
+</head>
+<body>
+
+
+<div class="page">
+
+    <form role="form" id="form" th:action="@{apply}" method="post" >
+        <input type="hidden" name="id" th:value="${session.user == null ? '' : session.user.id}"/>
+        <input type="hidden" name="openId" th:value="${session.openId}"/>
+
+    <div class="weui-cell" th:if="${session.user != null}">
+        <div class="weui-cell__hd"><label class="weui-label">报名号</label></div>
+        <div class="weui-cell__bd">
+            <span th:text="${session.user.id}" style="color:#FF0000"><strong></strong></span>
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">店铺代码</label></div>
+        <div class="weui-cell__bd">
+            <input  class="weui-input" placeholder="输入店铺代码"
+                    name="shopCode" id="shopCode" required="required"
+                    th:value="${session.user == null ? prefix : session.user.shopCode}"/>
+        </div>
+    </div>
+
+    <div class="weui-cell" th:if="${session.user == null}">
+        <a class="weui-btn weui-btn_primary" href="javascript:"
+           id="submitBtn">提交报名</a>
+    </div>
+    </form>
+    <div th:if="${session.user != null}">
+        <div class="weui-cells__title">已报名人员</div>
+        <div class="weui-cells">
+            <div class="weui-cell weui-cell_example" th:each="participant : ${participants}">
+                <div class="weui-cell__hd"></div>
+                <div class="weui-cell__bd">
+                    <p th:text="${participant.name}"></p>
+                </div>
+                <div class="weui-cell__ft" th:if="${participant.attendTraining}">确定参加培训会</div>
+            </div>
+        </div>
+        <a class="weui-btn weui-btn_primary" href="javascript:" onclick="edit()" >编辑人员信息</a>
+    </div>
+
+
+    <div th:if="${session.user != null and participants.size() > 0 }">
+        <div class="weui-cells__title">行程信息（必填，请准确填报，以便智能接送）</div>
+        <a class="weui-btn weui-btn_primary" href="javascript:" th:if="${schedule == null}" onclick="toAddSchedule()">填写行程信息</a>
+        <a class="weui-btn weui-btn_primary" href="javascript:" th:if="${schedule != null}"
+           th:onclick="'javascript:toEditSchedule('+${schedule.id}+')' ">编辑行程信息</a>
+    </div>
+
+
+    <div th:if="${schedule != null}">
+
+        <div class="weui-cells__title">同住信息（非必填，有同住的需求才需填报）</div>
+        <a class="weui-btn weui-btn_primary" href="javascript:"  onclick="toEditRoom()">编辑同住信息</a>
+    </div>
+
+    <br>
+
+    <article class="weui-article">
+        <h3 class="panel-title" th:text="${deadline}" style="color:#FF0000">报行程截止时间：4月10日</h3>
+        <h3>温馨提醒：</h3>
+        <section>
+            1.本次会务系统与微信绑定，请参会门店在报名、填写行程、报到过程中务必使用同一个微信号扫码，以免影响后续行程。<br>
+            2.报名名额：一店一名额。
+        </section>
+    </article>
+
+</div>
+
+
+</body>
+<script th:inline="javascript">
+
+   function edit() {
+       // $(".panel-body").modal('show');
+       window.location.href='/participant/list';
+   }
+
+   function toEditRoom() {
+       // $(".panel-body").modal('show');
+       window.location.href='/room/list';
+   }
+
+   function toAddSchedule() {
+       // $(".panel-body").modal('show');
+       window.location.href='/schedule/toAdd';
+   }
+
+   function toEditSchedule(id) {
+       // $(".panel-body").modal('show');
+       window.location.href="/schedule/toEdit?id=" + id;
+   }
+
+
+
+   $(function(){
+
+
+       /* confirm */
+       /*document.querySelector('#confirmBtn').addEventListener('click', function () {
+           weui.confirm('自定义标题的confirm', function () {
+               console.log('yes')
+           }, function () {
+               console.log('no')
+           }, {
+               title: '自定义标题'
+           });
+       });*/
+
+       $('#dialogs').on('click', '.weui-dialog__btn_default', function(){
+           $(this).parents('.js_dialog').fadeOut(200);
+       });
+
+       if(![[${onOff}]]) {//如果后台设置关闭报名则禁用所有按钮
+           console.log("disable button..");
+           $(".weui-btn").each(function () {
+               // $(this).attr('disabled',true);
+               $(this).hide();
+           });
+       }
+
+       $('#submitBtn').click(function() {
+           if($('#form')[0].reportValidity()) {
+               $.ajax({
+                   type: "GET",
+                   url: "/shop/get",
+                   data: {
+                       "code": $("#shopCode").val()
+                   },
+                   async: false,
+                   //dataType: "json",
+                   success: function(data){
+
+                       if (data == 0) {
+                           alert('找不到对应店铺，请确认店铺代码是否正确！');
+                           return;
+                       } else {
+                           var msg = data.code + "  " +  data.name + " 确认报名？";
+                           $.ajax({
+                               type: "GET",
+                               url: "/user/isSignUp",
+                               data: {
+                                   "shopCode": data.code
+                               },
+                               async: false,
+                               //dataType: "json",
+                               success: function(result){
+                                    if (result) { //店铺代码已经有人报过名
+                                        msg = data.code + "  " +  data.name + " 店铺代码已经有人报过名，确认继续报名？";
+                                    }
+                               }
+                           });
+
+                           weui.confirm(msg, function () {
+                               $('#submitBtn').addClass('weui-btn_disabled');
+                               $('#form').submit();
+                           }, function () {
+                               //console.log('no')
+                           }, {
+                               title: '确认报名'
+                           });
+                           /*if(confirm(msg)==true){
+                               $('#submitBtn').addClass('weui-btn_disabled');
+                               $('#form').submit();
+                           }*/
+
+                           /*$('.weui-dialog__bd').text(msg);
+                           $('#iosDialog1').fadeIn(200);
+
+                           $('#save').click(function() {
+                               $('#form').submit();
+                               $(this).parents('.js_dialog').fadeOut(200);
+                           });*/
+                           /*bootbox.confirm({
+                               message: msg,
+                               buttons: {
+                                   confirm: {
+                                       label: '确认',
+                                       className: 'btn-success'
+                                   },
+                                   cancel: {
+                                       label: '取消',
+                                       className: 'btn-danger'
+                                   }
+                               },
+                               callback: function (result) {
+                                   if(result) {
+                                       $(".panel-body").modal('show');
+                                       $('#form').submit();
+                                   }
+                               }
+                           });*/
+                       }
+                   }
+               });
+           }
+       })
+
+       $('#modifyBtn').click(function() {
+           if($('#form')[0].reportValidity()) {
+               $.ajax({
+                   type: "GET",
+                   url: "/shop/get",
+                   data: {
+                       "code": $("#shopCode").val()
+                   },
+                   async: false,
+                   //dataType: "json",
+                   success: function(data){
+
+                       if (data.length == 0) {
+                           bootbox.alert('找不到对应店铺，请确认店铺代码是否正确！');
+                           return;
+                       } else {
+                           bootbox.confirm({
+                               message: data.code + "  " +  data.name + " 确认修改店铺代码？",
+                               buttons: {
+                                   confirm: {
+                                       label: '确认',
+                                       className: 'btn-success'
+                                   },
+                                   cancel: {
+                                       label: '取消',
+                                       className: 'btn-danger'
+                                   }
+                               },
+                               callback: function (result) {
+                                   if(result) {
+                                       $.ajax({
+                                           type: "POST",
+                                           url: "/user/updateShopCode",
+                                           data: {
+                                               "shopCode": $("#shopCode").val()
+                                           },
+                                           success: function(data){
+                                               if (data) {
+                                                   alert('修改成功！');
+                                               } else {
+                                                   alert('修改失败，请联系客服！');
+                                               }
+                                           },
+                                           error: function(data){
+                                               alert('系统错误，请联系客服！');
+                                           }
+
+                                       });
+                                   }
+                               }
+                           });
+                       }
+                   }
+               });
+           }
+       })
+
+   });
+
+</script>
+</html>

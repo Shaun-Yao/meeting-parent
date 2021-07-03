@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订货会智能会务系统</title>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/weui/weui.min.js"></script>
+    <link rel="stylesheet" href="/weui/weui.min.css" />
+
+</head>
+<body>
+<div class="page" >
+    <div class="page__bd" >
+        <div class="weui-panel weui-panel_access" >
+            <div class="weui-panel__hd">参与人列表</div>
+            <div class="weui-panel__bd">
+                <div class="weui-media-box weui-media-box_text" th:each="participant, state : ${participants}">
+                    <h4 class="weui-media-box__title" th:text="${participant.name}">标题二</h4>
+                    <p class="weui-media-box__desc" th:if="${participant.attendTraining}"
+                       th:text="${participant.mobile} + '&nbsp&nbsp&nbsp&nbsp' + ${participant.sex.getDesc()
+                    + '&nbsp&nbsp&nbsp&nbsp 确定参加培训会'}"></p>
+                    <p class="weui-media-box__desc" th:if="${not participant.attendTraining}"
+                       th:text="${participant.mobile} + '&nbsp&nbsp&nbsp&nbsp' + ${participant.sex.getDesc()}"></p>
+                    <br>
+                    <a class="weui-btn weui-btn_mini weui-btn_default" th:href="'javascript:toEdit('+${participant.id}+')' " >修改</a>
+                    <a class="weui-btn weui-btn_mini weui-btn_warn" th:href="'javascript:remove('+${participant.id}+')' ">删除</a>
+                    <!--<a class="weui-btn weui-btn_mini weui-btn_default" th:href="'javascript:void(0);'" th:onclick="|toEdit('${participant.id}')|" >修改</a>
+                    <a class="weui-btn weui-btn_mini weui-btn_warn" th:href="'javascript:void(0);'"  th:onclick="|remove('${participant.id}')|">删除</a>-->
+                </div>
+
+            </div>
+        </div>
+        <br>
+    </div>
+
+    <div class="button-sp-area" style="text-align: center">
+        <a class="weui-btn weui-btn_mini weui-btn_primary" href="javascript:" id="add" onclick="toAdd()">添加人员</a>
+        <a class="weui-btn weui-btn_mini weui-btn_default" th:if="${schedule == null and participants.size() > 0}"
+           href="javascript:" onclick="toAddSchedule()">添加行程</a>
+        <a class="weui-btn weui-btn_mini weui-btn_warn" href="javascript:" onclick="goBack()">返回</a>
+    </div>
+</div>
+
+</body>
+<script th:inline="javascript">
+
+    function goBack() {
+        $('#add').addClass('weui-btn_disabled');
+        window.location.href='/user/toApply';
+    }
+
+    function toAdd() {
+        window.location.href='/participant/toAdd';
+    }
+
+    function toAddSchedule() {
+        window.location.href='/schedule/toAdd';
+    }
+
+    function toEdit(id) {
+        window.location.href="/participant/toEdit?id=" + id;
+    }
+
+    function remove(id) {
+        weui.confirm('', function () {
+            $.ajax({
+                type: "POST",
+                url: "/participant/delete?id=" + id,
+                //async: false,
+                success: function(data){
+                    if (data) {
+                        window.location.href='/participant/list';
+                    } else {
+                        alert("参与人已被选入同住人，请先删除同住人信息！");
+                    }
+                }
+            });
+        }, function () {
+            //console.log('no')
+        }, {
+            title: '确认删除'
+        });
+
+    }
+
+
+
+</script>
+</html>

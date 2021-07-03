@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hello, Bootstrap Table!</title>
+
+    <link rel="stylesheet" href="/AdminLTE-2.4.18/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-table/dist/bootstrap-table.min.css">
+</head>
+<body>
+<table id="table" class="modal-body">
+
+</table>
+<div id="user" >
+    <!--<button type="button" class="btn btn-success" id="add">新增</button>-->
+    <button type="button" class="btn btn-danger" id="remove">删除</button>
+
+</div>
+
+
+<!-- jQuery 3 -->
+<script src="/AdminLTE-2.4.18/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="/AdminLTE-2.4.18/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/webjars/bootstrap-table/dist/bootstrap-table.min.js"></script>
+<script src="/webjars/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/webjars/bootbox.js/5.1.3/dist/bootbox.min.js"></script>
+<script src="/tableExport/libs/FileSaver/FileSaver.min.js"></script>
+<script src="/tableExport/libs/js-xlsx/xlsx.core.min.js"></script>
+<script src="/tableExport/tableExport.min.js"></script>
+<script src="/webjars/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+</body>
+
+
+<script th:inline="javascript">
+
+    $(function(){
+        //$('#table').tableExport({type:'excel'});
+
+        $('#table').bootstrapTable({
+            locale: 'zh-CN',
+            url: '/user/list',
+            pagination: true,
+            sidePagination: "server",
+            search: true,
+            // formatSearch () {//不生效
+            //     return '输入报名号';
+            // },
+            showButtonText: true,
+            searchOnEnterKey: true,
+            showSearchButton: true,
+            showSearchClearButton: true,
+            //striped: true,
+            toolbar: "#user",
+            showRefresh: true,
+            singleSelect: true,
+            clickToSelect: true,
+            sortable: true,
+            smartDisplay: false,
+            showExport: true,
+            exportDataType: "all",
+            exportTypes: ['xlsx'],
+            exportOptions: {
+                // 导出数据去除第一列出现"on"
+                ignoreColumn: [0],
+                fileName: function () {
+                    return '报名数据'
+                }
+            },
+            pageNumber: 1,     //初始化加载第一页，默认第一页
+            pageSize: 10,      //每页的记录行数（*）
+            queryParams: function (params) {
+                //导出全部数据没有传limit给后台, 把limit设置为全部数据
+                if (typeof(params.limit) == "undefined") {
+                    params.limit = this.totalRows;
+                }
+                return params;
+            },
+            onClickRow: function (row, $element) {
+                //console.log(row.id);
+            },
+            onDblClickRow: function (row, $element) {
+
+            },
+            columns: [ {
+                field: '',
+                checkbox: true, // 显示一个勾选框
+                align: 'center', // 居中显示
+                formatter: function (value, row, index) {
+                    return row.id;
+                }
+            }, {
+                field: 'shopType',
+                title: '分区',
+                formatter: function (value, row, index) {
+                    if (value == 'ZHI_YING') {
+                        return "直营";
+                    } else if (value == 'DAI_LI') {
+                        return "代理";
+                    } else {
+                        return "联营";
+                    }
+                }
+            }, {
+                field: 'area',
+                title: '大区'
+            }, {
+                field: 'smallArea',
+                title: '小区'
+            }, {
+                field: 'shopCode',
+                title: '店铺代码'
+            }, {
+                field: 'shopName',
+                title: '店铺名称'
+            },{
+                field: 'id',
+                title: '报名号'
+            }, {
+                field: 'userNames',
+                title: '参与人'
+            }]
+        });
+
+
+        $('.search-input').attr('placeholder', '输入店铺代码');
+
+        $('#remove').click(function () {
+            // console.log($('#table').bootstrapTable('getSelections')[0].id);
+            // if($('#dg').datagrid('getSelected') == null) {
+            //     return;
+            // }
+            if($('#table').bootstrapTable('getSelections').length == 0) {
+                return;
+            }
+
+            var id = $('#table').bootstrapTable('getSelections')[0].id;
+            $.ajax({
+                type: "get",
+                url: "/room/hasRoom",
+                data: {
+                    userId: id
+                },
+                success: function(result){
+
+                    if(result.length != 0) {
+
+                        alert(result.name + " 已被报名号" + result.userId + " 选为同住人，房间id: " + result.id + " 请先修改同住人");
+                        return;
+                    }
+
+                    bootbox.confirm("确认删除报名号" + id + "  本次报名所有信息？",
+                        function(result){
+                            if(result) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/user/remove",
+                                    traditional: true,
+                                    //async: false,
+                                    data: {
+                                        id: id
+                                    },
+                                    success: function(data){
+                                        $('#table').bootstrapTable('refresh');
+                                    },
+                                    error:function(xhr,state,errorThrown){
+                                        alert("操作失败，请刷新页面重新尝试！");
+                                    }
+                                });
+                            }
+                        });
+                }
+            });
+
+
+        });
+
+    });
+
+</script>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订货会智能会务系统</title>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/weui/weui.min.js"></script>
+    <link rel="stylesheet" href="/weui/weui.min.css" />
+
+</head>
+<body>
+
+
+<div class="page" >
+    <div class="page__bd" >
+        <div class="weui-panel weui-panel_access" >
+            <div class="weui-panel__hd">同住信息列表</div>
+            <div class="weui-panel__bd">
+                <div class="weui-media-box weui-media-box_text" th:each="room, state : ${rooms}">
+                    <h4 class="weui-media-box__title" th:text="房间 + ${state.index + 1} + ':' + ${room.type.desc}">标题二</h4>
+                        <p class="weui-media-box__desc"
+                           th:text="${room.userNames}"></p>
+                    <br>
+                    <a class="weui-btn weui-btn_mini weui-btn_default" th:href="'javascript:toEdit('+${room.id}+')' " >修改</a>
+                    <a class="weui-btn weui-btn_mini weui-btn_warn" th:href="'javascript:remove('+${room.id}+')' ">删除</a>
+                </div>
+
+            </div>
+        </div>
+        <br>
+    </div>
+
+    <div class="button-sp-area" style="text-align: center">
+        <a class="weui-btn weui-btn_mini weui-btn_primary" href="javascript:" id="add" onclick="toAdd()">添加同住信息</a>
+        <a class="weui-btn weui-btn_mini weui-btn_warn" href="javascript:" onclick="goBack()">返回</a>
+    </div>
+</div>
+
+
+</body>
+<script th:inline="javascript">
+
+    function goBack() {
+        $('#add').addClass('weui-btn_disabled');
+        window.location.href='/user/toApply';
+    }
+
+    function toAdd() {
+        $('#add').addClass('weui-btn_disabled');
+        window.location.href='/room/toAdd';
+    }
+
+    function toEdit(id) {
+
+        window.location.href="/room/toEdit?id=" + id;
+    }
+
+
+    function remove(id) {
+
+        weui.confirm('', function () {
+            $.ajax({
+                type: "POST",
+                url: "/room/delete?id=" + id,
+                //async: false,
+                success: function(data){
+                    window.location.href='/room/list';
+                }
+            });
+        }, function () {
+            //console.log('no')
+        }, {
+            title: '确认删除'
+        });
+
+    }
+
+
+</script>
+</html>

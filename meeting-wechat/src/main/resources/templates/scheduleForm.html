@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订货会智能会务系统</title>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/weui/weui.min.css"/>
+
+</head>
+<body>
+
+<form role="form" id="form" th:action="@{save}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" th:value="${schedule == null ? '' : schedule.id}"/>
+    <input type="hidden" name="userId" th:value="${schedule == null ? session.user.id : schedule.userId}"/>
+    <input type="hidden" name="picture1" id="picture1" th:value="${schedule == null ? '' : schedule.picture1}">
+    <input type="hidden" name="picture2" id="picture2" th:value="${schedule == null ? '' : schedule.picture2}">
+
+    <div class="page">
+        <!--<div class="weui-form">-->
+            <div class="weui-form__text-area">
+                <br>
+                <h2 class="weui-form__title">填写行程信息</h2>
+            </div>
+            <div class="weui-form__control-area">
+                <div class="weui-cells__group weui-cells__group_form">
+                    <div class="weui-cells__title"><h2>来程信息</h2></div>
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label for="arrivedTravelMode" class="weui-label">出行方式</label>
+                        </div>
+                        <div class="weui-cell__bd">
+
+                            <select name="arrivedTravelMode" id="arrivedTravelMode" class="weui-select" required>
+                                <option></option>
+                                <option th:each="type : ${T(com.honji.meeting.enums.TravelModeEnum).values()}"
+                                        th:value="${type}" th:text="${type.desc}"
+                                        th:selected="${schedule != null && type eq schedule.arrivedTravelMode}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label" for="arrivedNum">航班/班次</label></div>
+                        <div class="weui-cell__bd">
+                            <input type="text" class="weui-input" name="arrivedNum" id="arrivedNum" minlength="2" maxlength="6"
+                                   placeholder="输入来程航班/班次" th:value="${schedule == null ? '' : schedule.arrivedNum}" required />
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label" for="arrivedTime">到达时间</label></div>
+                        <div class="weui-cell__bd">
+                            <input type="datetime-local" class="weui-input" name="arrivedTime" id="arrivedTime" required="required"
+                                   th:min="${scheduleTimeConfig.arriveStartTime}" th:max="${scheduleTimeConfig.arriveEndTime}"
+                                   th:value="${schedule == null ? scheduleTimeConfig.arriveStartTime : schedule.arrivedTime}" />
+                        </div>
+                        <div class="weui-cell__ft"></div>
+                    </div>
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label" for="arrivedPickUpStation">接送站点</label>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <select class="weui-select" name="arrivedPickUpStation" id="arrivedPickUpStation" required>
+                                <option></option>
+                                <option th:each="type : ${T(com.honji.meeting.enums.StationEnum).values()}"
+                                        th:value="${type}" th:text="${type.desc}"
+                                        th:selected="${schedule != null && type eq schedule.arrivedPickUpStation}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weui-cells__group weui-cells__group_form">
+                    <div class="weui-cells__title"><h2>返程信息</h2></div>
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label for="leavedTravelMode" class="weui-label">出行方式</label>
+                        </div>
+                        <div class="weui-cell__bd">
+
+                            <select name="leavedTravelMode" id="leavedTravelMode" class="weui-select" required>
+                                <option></option>
+                                <option th:each="type : ${T(com.honji.meeting.enums.TravelModeEnum).values()}"
+                                        th:value="${type}" th:text="${type.desc}"
+                                        th:selected="${schedule != null && type eq schedule.leavedTravelMode}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label" for="leavedNum">航班/班次</label></div>
+                        <div class="weui-cell__bd">
+                            <input type="text" class="weui-input" name="leavedNum" id="leavedNum" minlength="2" maxlength="6"
+                                   placeholder="输入返程航班/班次" th:value="${schedule == null ? '' : schedule.arrivedNum}" required />
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label" for="leavedTime">返程时间</label></div>
+                        <div class="weui-cell__bd">
+                            <input type="datetime-local" class="weui-input" name="leavedTime" id="leavedTime" required="required"
+                                   th:min="${scheduleTimeConfig.leaveStartTime}" th:max="${scheduleTimeConfig.leaveEndTime}"
+                                   th:value="${schedule == null ? scheduleTimeConfig.leaveStartTime : schedule.leavedTime}" />
+                        </div>
+                    </div>
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label" for="leavedPickUpLocation">返程出发地</label>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <select class="weui-select" name="leavedPickUpLocation" id="leavedPickUpLocation" required>
+                                <option></option>
+                                <option th:each="type : ${T(com.honji.meeting.enums.LeavePickUpLocationEnum).values()}"
+                                        th:value="${type}" th:text="${type.desc}"
+                                        th:selected="${schedule != null && type eq schedule.leavedPickUpLocation}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label" for="leavedStation">返程站点</label>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <select class="weui-select" name="leavedStation" id="leavedStation" required>
+                                <option></option>
+                                <option th:each="type : ${T(com.honji.meeting.enums.LeaveStationEnum).values()}"
+                                        th:value="${type}" th:text="${type.desc}"
+                                        th:selected="${schedule != null && type eq schedule.leavedStation}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page__bd">
+                    <div class="weui-gallery" id="gallery">
+                        <span class="weui-gallery__img" id="galleryImg"></span>
+                        <div class="weui-gallery__opr">
+                            <a href="javascript:" class="weui-gallery__del">
+                                <i class="weui-icon-delete weui-icon_gallery-delete"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="weui-cells weui-cells_form">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <div class="weui-uploader">
+                                    <div class="weui-uploader__hd">
+                                        <p class="weui-uploader__title">行程图片上传</p>
+                                        <div class="weui-uploader__info"></div>
+                                    </div>
+                                    <div class="weui-uploader__bd">
+                                        <ul class="weui-uploader__files" id="uploaderFiles">
+
+                                        </ul>
+                                        <div class="weui-uploader__input-box">
+                                            <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weui-form__opr-area">
+                <div class="button-sp-area" style="text-align: center">
+
+                    <a class="weui-btn weui-btn_mini weui-btn_primary" href="javascript:" id="submitBtn">确定提交</a>
+                    <a class="weui-btn weui-btn_mini weui-btn_warn" href="javascript:" onclick="goBack()">取消</a>
+
+                </div>
+            </div>
+        <!--</div>-->
+    </div>
+</form>
+
+
+<!--BEGIN toast-->
+<div id="toast" style="display: none;">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+        <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+        <p class="weui-toast__content">图片上传成功</p>
+    </div>
+</div>
+<!--end toast-->
+</body>
+<script th:inline="javascript">
+
+    var fileArr=new Array();
+    var pictureSize = 0;
+
+
+
+    $(function(){
+        var $toast = $('#toast');
+
+        if ([[${schedule}]] == null) {//新增行程默认返程出发地为“公司”
+            //$('#leavedPickUpLocation option[value=COMPANY]')[0].selected=true;
+            $('#leavedPickUpLocation option[value=HOTEL]')[0].selected=true;
+        }
+        var tmpl = '<li class="weui-uploader__file" file-name="" style="background-image:url(#url#)"></li>',
+            $gallery = $("#gallery"), $galleryImg = $("#galleryImg"),
+            $uploaderInput = $("#uploaderInput"),
+            $uploaderFiles = $("#uploaderFiles");
+
+        var picture1 = $('#picture1').val();
+        var picture2 = $('#picture2').val();
+        if (picture1.length > 1) {
+            //return new File([u8arr], "asd", {type:mime});
+            $uploaderFiles.append($(tmpl.replace('#url#', "/schedule/show?fileName=" + picture1)).attr('file-name', picture1));
+            pictureSize = pictureSize + 1;
+        }
+
+        if (picture2.length > 1) {
+            $uploaderFiles.append($(tmpl.replace('#url#', "/schedule/show?fileName=" + picture2)).attr('file-name', picture2));
+            pictureSize = pictureSize + 1;
+            $(".weui-uploader__input-box").hide();
+        }
+
+        $uploaderInput.on("change", function(e){
+            //console.log(33333);
+            var src, url = window.URL || window.webkitURL || window.mozURL, files = e.target.files;
+            var length=fileArr.length;
+            for (var i = 0, len = files.length; i < len; ++i) {
+                var file = files[i];
+                if(length + i + 1 > 2) {
+                    break;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("图片超过5M，不允许上传");
+                    continue;
+                }
+                var formData = new FormData();
+                formData.append("file", file);
+                $.ajax({
+                    url: "/schedule/upload",
+                    type: "POST",
+                    async: false,
+                    cache: false,
+                    processData: false,// 告诉jQuery不要去处理发送的数据
+                    contentType: false,// 告诉jQuery不要去设置Content-Type请求头
+                    data: formData,
+                    success: function(result){
+                        pictureSize = pictureSize + 1;
+                        $uploaderFiles.append($(tmpl.replace('#url#', "/schedule/show?fileName=" + result)).attr('file-name', result));
+                        if ($toast.css('display') != 'none') return;
+                        $toast.fadeIn(100);
+                        setTimeout(function () {
+                            $toast.fadeOut(100);
+                        }, 2000);
+                    },
+                    error:function(xhr,state,errorThrown){
+                        alert("图片上传失败，请重新尝试！");
+                    }
+
+                });
+
+                fileArr.push(file);
+                // if (url) {
+                //     src = url.createObjectURL(file);
+                // } else {
+                //     src = e.target.result;
+                // }
+                // $uploaderFiles.append($(tmpl.replace('#url#', src)));
+            }
+            checkPhotoSize();
+        });
+
+        //控制显示三张以内照片
+        function checkPhotoSize(){
+            if(pictureSize > 1){
+                //console.log("hide box");
+                $(".weui-uploader__input-box").hide();
+            }else{
+                //console.log("show box");
+                $(".weui-uploader__input-box").show();
+            }
+        };
+
+
+        var index; //第几张图片
+        $uploaderFiles.on("click", "li", function(){
+            index = $(this).index();
+            $galleryImg.attr("style", this.getAttribute("style"));
+            $gallery.fadeIn(100);
+        });
+        $gallery.on("click", function(){
+            $gallery.fadeOut(100);
+        });
+
+        //删除图片
+        $(".weui-gallery__del").click(function() {
+            //console.log(index);
+            $uploaderFiles.find("li").eq(index).remove();
+            fileArr.splice(index,1);
+            pictureSize = pictureSize - 1;
+            checkPhotoSize();
+        });
+/*
+
+        $('#leavedTime').change(function () {
+
+            if (this.value > [[${scheduleTimeConfig.arriveStartTime}]]) {
+                $('#leavedPickUpLocation option[value=HOTEL]')[0].selected=true;
+            } else {
+                $('#leavedPickUpLocation option[value=COMPANY]')[0].selected=true;
+            }
+        });
+*/
+
+        $('#arrivedTravelMode').change(function () {
+            switch (this.value) {
+                case 'PLANE':
+                    $('#arrivedPickUpStation option[value=AIRPORT]')[0].selected=true;
+                    $('#arrivedNum').val('');
+                    break;
+                case 'HIGH_SPEED_RAIL':
+                    $('#arrivedPickUpStation option[value=HIGH_SPEED_RAIL_STATION]')[0].selected=true;
+                    $('#arrivedNum').val('');
+                    break;
+                case 'TRAIN':
+                    $('#arrivedPickUpStation option[value=TRAIN_STATION]')[0].selected=true;
+                    $('#arrivedNum').val('');
+                    break;
+                default:
+                    $('#arrivedNum').val('无');
+                    $('#arrivedPickUpStation option[value=NONE]')[0].selected=true;
+            }
+        });
+
+        $('#leavedTravelMode').change(function () {
+            switch (this.value) {
+                case 'PLANE':
+                    $('#leavedNum').val('');
+                    $('#leavedStation option[value=AIRPORT]')[0].selected=true;
+                    break;
+                case 'HIGH_SPEED_RAIL':
+                    $('#leavedNum').val('');
+                    $('#leavedStation option[value=HIGH_SPEED_RAIL_STATION]')[0].selected=true;
+                    break;
+                case 'TRAIN':
+                    $('#leavedNum').val('');
+                    $('#leavedStation option[value=TRAIN_STATION]')[0].selected=true;
+                    break;
+                default:
+                    $('#leavedNum').val('无');
+                    $('#leavedPickUpLocation option[value=NONE]')[0].selected=true;
+                    $('#leavedStation option[value=NONE]')[0].selected=true;
+            }
+        });
+
+
+        $('#submitBtn').click(function() {
+
+            if($('#form')[0].reportValidity()) {
+
+                var pictures = $uploaderFiles.find("li");
+                if (pictures.length == 0) { //删除了所有图片需要清空值
+                    $('#picture1').val('');
+                    $('#picture2').val('');
+                    if (($('#arrivedTravelMode').val() != 'SELF_DRIVING' && $('#arrivedTravelMode').val() != 'BUS')
+                        || $('#leavedTravelMode').val() != 'SELF_DRIVING' && $('#leavedTravelMode').val() != 'BUS') {
+                        alert("请上传行程图片！");
+                        return;
+                    }
+                }
+                //console.log(23423);
+                if (pictures.length == 1) { //只有一张图片，清空第二张
+                    $('#picture2').val('');
+                }
+                pictures.each(function (i) {
+
+                    if (i == 0) {
+                        $('#picture1').val($(this).attr('file-name'));
+                    }
+                    if (i == 1) {
+                        $('#picture2').val($(this).attr('file-name'));
+                    }
+                });
+
+                //$(".panel-body").modal('show');
+                $('#submitBtn').addClass('weui-btn_disabled');
+                $('#form').submit();
+            }
+        });
+
+    });
+
+    function goBack() {
+        //$(".panel-body").modal('show');
+        $('#submitBtn').addClass('weui-btn_disabled');
+        window.location.href='/user/toApply';
+    }
+
+
+</script>
+</html>
