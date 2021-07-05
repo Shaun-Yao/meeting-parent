@@ -68,7 +68,6 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
             }
 
             String authUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAuth2Scope.SNSAPI_USERINFO, null);
-            //log.info(authUrl);
             response.sendRedirect(authUrl);
             //return false;
         } else { //回调带有code参数需要校验
@@ -76,7 +75,6 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
                 WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
                 WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(wxMpOAuth2AccessToken, null);
                 final String openId = wxMpUser.getOpenId();
-                //log.info(openId);
                 //QueryWrapper<User> queryWrapper = new QueryWrapper<>();
                 //queryWrapper.eq("open_id", openId);
                 //User user = userService.getOne(queryWrapper);
