@@ -1,7 +1,7 @@
 package com.honji.meeting.controller;
 
 
-import com.honji.meeting.entity.ScheduleTimeConfig;
+import com.honji.meeting.entity.SysConfig;
 import com.honji.meeting.service.IScheduleTimeConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ public class ScheduleTimeConfigController {
 
     @PostMapping("/update")
     @ResponseBody
-    public boolean update(@ModelAttribute ScheduleTimeConfig scheduleTimeConfig) {
+    public boolean update(@ModelAttribute SysConfig scheduleTimeConfig) {
 
         return scheduleTimeConfigService.updateById(scheduleTimeConfig);
     }

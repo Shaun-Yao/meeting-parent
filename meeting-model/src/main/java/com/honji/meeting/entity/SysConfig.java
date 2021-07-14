@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-public class ScheduleTimeConfig extends IdEntity {
+public class SysConfig extends IdEntity {
 
 
     private ShopTypeEnum shopType;

@@ -56,9 +56,9 @@ public class UserController {
         susQueryWrapper.eq("shop_type", prefix);
         SignUpSwitch signUpSwitch = signUpSwitchService.getOne(susQueryWrapper);
 
-        QueryWrapper<ScheduleTimeConfig> stQueryWrapper = new QueryWrapper();
+        QueryWrapper<SysConfig> stQueryWrapper = new QueryWrapper();
         stQueryWrapper.eq("shop_type", prefix);
-        ScheduleTimeConfig scheduleTimeConfig = scheduleTimeConfigService.getOne(stQueryWrapper);
+        SysConfig scheduleTimeConfig = scheduleTimeConfigService.getOne(stQueryWrapper);
 
 
 //        if (session.getAttribute("prefix") == null) {

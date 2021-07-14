@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Hello, Bootstrap Table!</title>
-
     <link rel="stylesheet" href="/AdminLTE-2.4.18/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/webjars/bootstrap-table/dist/bootstrap-table.min.css">
     <link rel="stylesheet" href="/webjars/bootstrap-select/1.13.17/css/bootstrap-select.min.css" />
@@ -12,16 +11,9 @@
 <body>
 <table id="table" class="modal-body">
 </table>
-<div id="shop" >
+<div id="area" >
         <button type="button" class="btn btn-success" id="add">新增</button>
-        <button type="button" class="btn btn-danger" id="remove">删除</button>
-   <!-- <div class="float-right search btn-group">
-        <input class="form-control
-        search-input" type="text" placeholder="Search">
-
-    </div>
-    <button type="button" id="search" class="btn btn-primary">查询</button>-->
-
+<!--        <button type="button" class="btn btn-danger" id="remove">删除</button>-->
 </div>
 
 <!-- 模态框（Modal） -->
@@ -30,78 +22,33 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">店铺信息</h4>
+                <h4 class="modal-title" id="myModalLabel">时间信息</h4>
             </div>
-            <form class="form-horizontal" id="form" role="form" action="/shop/add" method="post">
+            <form class="form-horizontal" id="form" role="form" action="/area/add" method="post">
                 <div class="modal-body">
-                    <input type="hidden" id="id" name="id" >
+                    <input type="hidden" id="id" name="id">
                     <div class="form-group">
-                        <label for="code" class="col-sm-2 control-label">店铺代码</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="code" name="code" required >
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">店铺名称</label>
+                        <label for="name" class="col-sm-2 control-label">名称</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="area" class="col-sm-2 control-label">大区</label>
+                        <label for="code" class="col-sm-2 control-label">代码</label>
                         <div class="col-sm-10">
-                            <select name="area" id="area" class="selectpicker" required
+                            <input type="text" class="form-control" id="code" name="code" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeConfigId" class="col-sm-2 control-label">来返程时间</label>
+                        <div class="col-sm-10">
+                            <select name="timeConfigId" id="timeConfigId" class="selectpicker" required
                                     data-live-search="true" data-actions-box="true">
                                 <option></option>
-                                <option th:each="area : ${areas}"
-                                        th:value="${area.code}" th:text="${area.name}">
+                                <option th:each="timeConfig : ${timeConfigs}"
+                                        th:value="${timeConfig.id}" th:text="${timeConfig.name}">
                                 </option>
                             </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="smallArea" class="col-sm-2 control-label">小区</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="smallArea" name="smallArea" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="franchisee" class="col-sm-2 control-label">加盟商</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="franchisee" name="franchisee" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label  class="col-sm-2 control-label">分区</label>
-                        <div class="col-sm-10">
-                            <label class="radio-inline" th:each="type : ${T(com.honji.meeting.enums.ShopTypeEnum).values()}">
-                                <input type="radio" name="type" th:value="${type}" th:text="${type.desc}">
-                            </label>
-                            <!--<label class="radio-inline">
-                                <input type="radio" name="type" value="加盟"> 加盟
-                            </label>-->
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">运营状况</label>
-                        <div class="col-sm-10">
-                            <label class="radio-inline">
-                                <input type="radio" name="situation" value="正常营业" checked> 正常营业
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="situation" value="异常店铺"> 异常店铺
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">单店/多店</label>
-                        <div class="col-sm-10">
-                            <label class="radio-inline">
-                                <input type="radio" name="mode" value="单店经营" checked> 单店经营
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="mode" value="多店经营"> 多店经营
-                            </label>
                         </div>
                     </div>
 
@@ -124,12 +71,7 @@
 <script src="/webjars/bootstrap-table/dist/bootstrap-table.min.js"></script>
 <script src="/webjars/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
 <script src="/webjars/bootbox.js/5.1.3/dist/bootbox.min.js"></script>
-<script src="/tableExport/libs/FileSaver/FileSaver.min.js"></script>
-<script src="/tableExport/libs/js-xlsx/xlsx.core.min.js"></script>
-<script src="/tableExport/tableExport.min.js"></script>
-<script src="/webjars/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js"></script>
 <script src="/webjars/bootstrap-select/1.13.17/js/bootstrap-select.min.js"></script>
-
 
 </body>
 
@@ -138,31 +80,22 @@
 
     $(function(){
 
+        $('.selectpicker').selectpicker();
         $('#table').bootstrapTable({
-            url: '/shop/list',
+            url: '/area/list',
             pagination: true,
             sidePagination: "server",
             locale: 'zh-CN',
-            search: true,
+            // search: true,
             showButtonText: true,
             searchOnEnterKey: true,
             showSearchButton: true,
             showSearchClearButton: true,
             showRefresh: true,
-            toolbar: "#shop",
+            toolbar: "#area",
             clickToSelect: true,
             sortable: false,
             smartDisplay: false,
-            showExport: true,
-            exportDataType: "all",
-            exportTypes: ['xlsx'],
-            exportOptions: {
-                // 导出数据去除第一列出现"on"
-                ignoreColumn: [0],
-                fileName: function () {
-                    return '店铺数据'
-                }
-            },
             pageNumber: 1,     //初始化加载第一页，默认第一页
             pageSize: 10,      //每页的记录行数（*）
             //pageList: [5, 10, 50, 100, 'All'] ,  // 可选的每页数据
@@ -180,25 +113,17 @@
             onDblClickRow: function (row, $element) {
                 $.ajax({
                     type: "GET",
-                    url: "/shop/get?id=" + row.id,
+                    url: "/area/get?id=" + row.id,
                     async: false,
                     success: function(data){
-                        //console.log(data.type);
                         $('#form').clearForm();
                         $('#id').val(data.id);
-                        $('#code').val(data.code);
                         $('#name').val(data.name);
-                        $('#area').val(data.area);
-                        $('#smallArea').val(data.smallArea);
-                        $('#franchisee').val(data.franchisee);
-                        $("input:radio[name=type][value=" + data.type + "]")[0].checked=true;
-                        //$("input:contains('" + data.type + "')").attr("checked",true);
-                        $("input:radio[name=situation][value=" + data.situation + "]")[0].checked=true;
-                        //$("input:radio[name=mode][value=" + data.mode + "]").attr("checked",true);
-                        $("input:radio[name=mode][value=" + data.mode + "]")[0].checked=true;
-                        $("#area option[value=" + data.area + "]")[0].selected=true;
+                        $('#code').val(data.code);
+                        $("#timeConfigId option[value=" + data.timeConfigId + "]")[0].selected=true;
                     }
                 });
+                $('.selectpicker').selectpicker('refresh');
                 $('#myModal').modal('show');
             },
             columns: [ {
@@ -214,23 +139,17 @@
                 title: 'ID',
                 visible: false
             }, {
-                field: 'code',
-                title: '店铺代码'
-            }, {
                 field: 'name',
-                title: '店铺名字'
+                title: '名称'
             }, {
-                field: 'area',
-                title: '大区'
+                field: 'code',
+                title: '代码'
             }, {
-                field: 'smallArea',
-                title: '小区'
+                field: 'ShopType',
+                title: '类型'
             }, {
-                field: 'situation',
-                title: '运营状况'
-            }, {
-                field: 'mode',
-                title: '单店/多店'
+                field: 'timeConfig',
+                title: '来返程时间'
             }]
         });
 
@@ -241,7 +160,7 @@
                 //$('#form').submit();
                 $.ajax({
                     type: "post",
-                    url: "/shop/save",
+                    url: "/area/save",
                     data: $('#form').serialize(),
                     success: function(data){
                         $('#myModal').modal('hide');
@@ -258,21 +177,11 @@
             //$('#form')[0].reset(); //无法重置hidden项
             $('#id').val('');
             $('#form').resetForm();//无法重置hidden项
-            // $("input:radio").get(0).checked=true;
-            // $("input[type='radio']").each(function (index, element) {
-            //     $(this).get(0).checked=true;
-            // });
-            $("input:radio[name=type]").get(0).checked=true;
-            $("input:radio[name=situation]").get(0).checked=true;
-            $("input:radio[name=mode]").get(0).checked=true;
+            // $("input:radio[name=type]").get(0).checked=true;
             $('#myModal').modal('show');
         });
 
         $('#remove').click(function () {
-            // console.log($('#table').bootstrapTable('getSelections')[0].id);
-            // if($('#dg').datagrid('getSelected') == null) {
-            //     return;
-            // }
             var ids = [];
             $.each($('#table').bootstrapTable('getSelections'), function(index, item){
                 //console.log(item.id);
@@ -283,7 +192,7 @@
                     if(result) {
                         $.ajax({
                             type: "POST",
-                            url: "/shop/remove",
+                            url: "/area/remove",
                             traditional: true,
                             //async: false,
                             data: {

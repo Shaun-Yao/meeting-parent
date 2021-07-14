@@ -1,7 +1,8 @@
 package com.honji.meeting.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.honji.meeting.entity.SysConfig;
+import com.honji.meeting.entity.Admin;
+import com.honji.meeting.entity.Area;
 
 /**
  * <p>
@@ -9,8 +10,8 @@ import com.honji.meeting.entity.SysConfig;
  * </p>
  *
  * @author yao
- * @since 2019-10-18
+ * @since 2021-07-13
  */
-public interface IScheduleTimeConfigService extends IService<SysConfig> {
+public interface IAreaService extends IService<Area> {
 
 }

@@ -2,12 +2,8 @@ package com.honji.meeting.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.honji.meeting.entity.Admin;
-import com.honji.meeting.entity.ScheduleTimeConfig;
-import com.honji.meeting.entity.SignUpSwitch;
-import com.honji.meeting.service.IAdminService;
-import com.honji.meeting.service.IScheduleTimeConfigService;
-import com.honji.meeting.service.ISignUpSwitchService;
+import com.honji.meeting.entity.*;
+import com.honji.meeting.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +34,11 @@ public class AdminController {
     @Autowired
     private IScheduleTimeConfigService scheduleTimeConfigService;
 
+    @Autowired
+    private ITimeConfigService timeConfigService;
+
+    @Autowired
+    private IAreaService areaService;
 
     @Autowired
     private HttpSession session;
@@ -47,14 +48,14 @@ public class AdminController {
         Admin admin = (Admin) session.getAttribute("admin");
         String type = admin.getType();
         QueryWrapper<SignUpSwitch> signUpSwitchQueryWrapper = new QueryWrapper();
-        QueryWrapper<ScheduleTimeConfig> scheduleTimeConfigQueryWrapper = new QueryWrapper();
+        QueryWrapper<SysConfig> scheduleTimeConfigQueryWrapper = new QueryWrapper();
         if (!StringUtils.isEmpty(type)) {
             signUpSwitchQueryWrapper.eq("shop_type", admin.getType());
             scheduleTimeConfigQueryWrapper.eq("shop_type", admin.getType());
         }
 
         List<SignUpSwitch> switches = signUpSwitchService.list(signUpSwitchQueryWrapper);
-        List<ScheduleTimeConfig> timeConfigs = scheduleTimeConfigService.list(scheduleTimeConfigQueryWrapper);
+        List<SysConfig> timeConfigs = scheduleTimeConfigService.list(scheduleTimeConfigQueryWrapper);
         model.addAttribute("switches", switches);
         model.addAttribute("timeConfigs", timeConfigs);
         return "config";
@@ -80,21 +81,17 @@ public class AdminController {
     }
 
 
-    @GetMapping("/table")
-    public String table() {
-
-        return "table";
-    }
-
-
-    @GetMapping("/another")
-    public String another() {
-
-        return "another";
-    }
-
     @GetMapping("/shop")
-    public String shop() {
+    public String shop(Model model) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        QueryWrapper<Area> queryWrapper = new QueryWrapper<>();
+
+        String type = admin.getType();
+        if (!StringUtils.isEmpty(type)) {
+            queryWrapper.eq("type", admin.getType());
+        }
+        List<Area> areas = areaService.list(queryWrapper);
+        model.addAttribute("areas", areas);
         return "shop";
     }
 
@@ -123,6 +120,26 @@ public class AdminController {
 //        model.addAttribute("children", children);
         return "room";
     }
+
+    @GetMapping("/area")
+    public String area(Model model) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        QueryWrapper<TimeConfig> queryWrapper = new QueryWrapper<>();
+
+        String type = admin.getType();
+        if (!StringUtils.isEmpty(type)) {
+            queryWrapper.eq("type", admin.getType());
+        }
+        List<TimeConfig> timeConfigs = timeConfigService.list(queryWrapper);
+        model.addAttribute("timeConfigs", timeConfigs);
+        return "area";
+    }
+
+    @GetMapping("/time-config")
+    public String timeConfig() {
+        return "time-config";
+    }
+
 
     @ResponseBody
     @PostMapping("/login")

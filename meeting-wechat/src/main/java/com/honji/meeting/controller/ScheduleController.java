@@ -3,12 +3,10 @@ package com.honji.meeting.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.honji.meeting.entity.Schedule;
-import com.honji.meeting.entity.ScheduleTimeConfig;
+import com.honji.meeting.entity.SysConfig;
+import com.honji.meeting.entity.TimeConfig;
 import com.honji.meeting.model.UserSessionVO;
-import com.honji.meeting.service.IScheduleService;
-import com.honji.meeting.service.IScheduleTimeConfigService;
-import com.honji.meeting.service.IShopService;
-import com.honji.meeting.service.IUserService;
+import com.honji.meeting.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -51,10 +49,7 @@ public class ScheduleController {
     private IScheduleService scheduleService;
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IShopService shopService;
+    private ITimeConfigService timeConfigService;
 
     @Autowired
     private IScheduleTimeConfigService scheduleTimeConfigService;
@@ -65,27 +60,20 @@ public class ScheduleController {
     @GetMapping("/toAdd")
     public String toAdd(Model model) {
         UserSessionVO user = (UserSessionVO) session.getAttribute("user");
-        QueryWrapper<ScheduleTimeConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("shop_type", user.getShopType());
-        ScheduleTimeConfig scheduleTimeConfig = scheduleTimeConfigService.getOne(queryWrapper);
+//        QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("shop_type", user.getShopType());
+//        SysConfig scheduleTimeConfig = scheduleTimeConfigService.getOne(queryWrapper);
+        TimeConfig scheduleTimeConfig = timeConfigService.getConfig(user.getShopCode());
         model.addAttribute("scheduleTimeConfig", scheduleTimeConfig);
 
         return "scheduleForm";
     }
 
 
-    @GetMapping("/test")
-    public String test() {
-        return "scheduleFormTest";
-    }
-
-
     @GetMapping("/toEdit")
     public String toEdit(@RequestParam Long id, Model model) {
         UserSessionVO user = (UserSessionVO) session.getAttribute("user");
-        QueryWrapper<ScheduleTimeConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("shop_type", user.getShopType());
-        ScheduleTimeConfig scheduleTimeConfig = scheduleTimeConfigService.getOne(queryWrapper);
+        TimeConfig scheduleTimeConfig = timeConfigService.getConfig(user.getShopCode());
         model.addAttribute("scheduleTimeConfig", scheduleTimeConfig);
 
         Schedule schedule = scheduleService.getById(id);

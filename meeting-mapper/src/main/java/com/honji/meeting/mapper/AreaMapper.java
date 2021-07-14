@@ -1,8 +1,8 @@
 package com.honji.meeting.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.honji.meeting.entity.SysConfig;
-
+import com.honji.meeting.entity.Admin;
+import com.honji.meeting.entity.Area;
 
 /**
  * <p>
@@ -10,8 +10,8 @@ import com.honji.meeting.entity.SysConfig;
  * </p>
  *
  * @author yao
- * @since 2019-10-18
+ * @since 2021-07-13
  */
-public interface ScheduleTimeConfigMapper extends BaseMapper<SysConfig> {
+public interface AreaMapper extends BaseMapper<Area> {
 
 }

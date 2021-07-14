@@ -14,6 +14,15 @@ public enum ShopTypeEnum {
         this.desc = desc;
     }
 
+    public static ShopTypeEnum get(String code) {
+        for(ShopTypeEnum ste :ShopTypeEnum.values()) {
+            if (code.equals(ste.code)) {
+                return ste;
+            }
+        }
+        return null;
+    }
+
     @EnumValue
     private final String code;
     private final String desc;

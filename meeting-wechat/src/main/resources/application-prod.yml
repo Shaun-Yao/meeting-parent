@@ -44,8 +44,8 @@ mapper:
 
 wx:
   mp:
-    appId: test
-    secret: test
+    appId: wx5c381fc8c2e03d79
+    secret: 4829f8cf6a078933d1c62395afd49611
     token:
     aesKey:
 logging:
