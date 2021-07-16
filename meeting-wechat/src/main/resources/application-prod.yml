@@ -11,7 +11,7 @@ web:
 
 spring:
   datasource:
-    url: jdbc:mysql://10.10.10.106:3306/romsp_meeting?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=true
+    url: jdbc:mysql://10.10.10.106:3306/romsp-meeting?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=true
     username: ipos
     password: hongjipos@2016
     driver-class-name: com.mysql.jdbc.Driver
@@ -44,8 +44,8 @@ mapper:
 
 wx:
   mp:
-    appId: wx5c381fc8c2e03d79
-    secret: 4829f8cf6a078933d1c62395afd49611
+    appId:
+    secret:
     token:
     aesKey:
 logging:

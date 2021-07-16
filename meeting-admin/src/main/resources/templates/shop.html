@@ -199,6 +199,8 @@
                         $("#area option[value=" + data.area + "]")[0].selected=true;
                     }
                 });
+                //添加选项或者设置selected都需要refresh
+                $('.selectpicker').selectpicker('refresh');
                 $('#myModal').modal('show');
             },
             columns: [ {

@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="/AdminLTE-2.4.18/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/webjars/bootstrap-table/dist/bootstrap-table.min.css">
-    <link rel="stylesheet" href="/webjars/weui/1.1.2/dist/style/weui.min.css" />
+    <link rel="stylesheet" href="/webjars/weui/2.1.4/dist/style/weui.min.css" />
 </head>
 <body>
 <table id="table" class="modal-body">
@@ -26,7 +26,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">参与人信息</h4>
+                <h4 class="modal-title" id="myModalLabel">行程信息</h4>
             </div>
             <form class="form-horizontal" id="form" role="form" action="/schedule/add" method="post">
                 <div class="modal-body">
@@ -231,7 +231,6 @@
                 //console.log("hide box");
                 $(".weui-uploader__input-box").hide();
             }else{
-                console.log("show box");
                 $(".weui-uploader__input-box").show();
             }
         };
@@ -298,7 +297,6 @@
                     success: function(data){
 
                         $gallery.fadeOut(100);//关闭图片预览
-                        //console.log($("#arrivedPickUpStation option:contains('" + data.arrivedPickUpStation + "')").val());
                         $('#form').clearForm();
                         $('#id').val(data.id);
                         $('#userId').val(data.userId);
@@ -307,9 +305,10 @@
                         $('#leavedNum').val(data.leavedNum);
                         $('#leavedTime').val(data.leavedTime);
                         //根据自定义属性值选中
-                        $("input:radio[name=arrivedTravelMode][arrivedTravelMode=" + data.arrivedTravelMode + "]")[0].checked=true;
+                        $("input[name=arrivedTravelMode][value='" + data.arrivedTravelMode + "']").prop("checked",true);
+                        // $("input:radio[name=arrivedTravelMode][arrivedTravelMode=" + data.arrivedTravelMode + "]")[0].checked=true;
                         $("#arrivedPickUpStation option:contains('" + data.arrivedPickUpStation + "')")[0].selected=true;
-                        $("input:radio[name=leavedTravelMode][leavedTravelMode=" + data.leavedTravelMode + "]")[0].checked=true;
+                        $("input[name=leavedTravelMode][value='" + data.leavedTravelMode + "']").prop("checked",true);
                         $("#leavedPickUpLocation option:contains('" + data.leavedPickUpLocation + "')")[0].selected=true;
                         $("#leavedStation option:contains('" + data.leavedStation + "')")[0].selected=true;
 
@@ -375,7 +374,17 @@
                 title: '参与人'
             }, {
                 field: 'arrivedTravelMode',
-                title: '来程方式'
+                title: '来程方式',
+                formatter: function (value, row, index) {
+                    /*<![CDATA[*/
+                    /*[# th:each="n : ${T(com.honji.meeting.enums.TravelModeEnum).values()}"]*/
+                    //console.log("[(${n.desc})]");
+                    if (value == "[(${n})]") {
+                        return "[(${n.desc})]";
+                    }
+                    /*[/]*/
+                    /*]]>*/
+                }
             }, {
                 field: 'arrivedNum',
                 title: '来程班次号'
@@ -387,7 +396,17 @@
                 title: '来程接送点'
             }, {
                 field: 'leavedTravelMode',
-                title: '返程方式'
+                title: '返程方式',
+                formatter: function (value, row, index) {
+                    /*<![CDATA[*/
+                    /*[# th:each="n : ${T(com.honji.meeting.enums.TravelModeEnum).values()}"]*/
+                    //console.log("[(${n.desc})]");
+                    if (value == "[(${n})]") {
+                        return "[(${n.desc})]";
+                    }
+                    /*[/]*/
+                    /*]]>*/
+                }
             }, {
                 field: 'leavedNum',
                 title: '返程班次号'

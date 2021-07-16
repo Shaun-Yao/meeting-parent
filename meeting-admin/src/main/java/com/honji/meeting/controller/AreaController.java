@@ -45,13 +45,8 @@ public class AreaController {
     public DataGridResult list(@RequestParam(defaultValue = "0") int offset, @RequestParam int limit) {
         Admin admin = (Admin) session.getAttribute("admin");
         IPage<Area> areaPage = new Page<>(offset / limit + 1, limit);
-        QueryWrapper<Area> queryWrapper = new QueryWrapper<>();
-        String type = admin.getType();
-        if (!StringUtils.isEmpty(type)) {
-            queryWrapper.eq("type", admin.getType());
-        }
-//        queryWrapper.like("code", search);
-        return new DataGridResult(areaService.page(areaPage, queryWrapper));
+
+        return new DataGridResult(areaService.listForIndex(areaPage, admin.getType()));
 
     }
 
