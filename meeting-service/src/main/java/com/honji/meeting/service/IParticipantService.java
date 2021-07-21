@@ -22,7 +22,6 @@ public interface IParticipantService extends IService<Participant> {
     IPage<ParticipantVO> getForIndex(Page<Participant> page, String shopType, String search);
     //    List<Participant> listAvailable(Long userId);
     List<Participant> listAvailable(String shopType);
-    List<Participant> listAvailable();
 //    List<Participant> listAvailableChildren();
     List<Participant> getAvailable(Long userId);
     List<Participant> getUnAvailable(Long userId);

@@ -61,6 +61,23 @@ public interface ParticipantMapper extends BaseMapper<Participant> {
     List<Participant> selectUnAvailable(Long userId);
 
     /**
+     * 查询指定区域所有未分配的房间的参与人
+     * @param shopType
+     * @return
+     */
+    @Select({"<script>",
+            "SELECT participant.id, participant.name, participant.sex FROM participant",
+            "LEFT JOIN `user` ON participant.user_id = `user`.id",
+            "LEFT JOIN shop ON `user`.shop_id = shop.id ",
+            "WHERE participant.id not in (SELECT participant_id FROM room_participant) ",
+            "<if test='shopType!=null and shopType!=\"\"'>",
+            "AND shop.type = #{shopType} ",
+            "</if>",
+            "</script>"})
+    List<Participant> selectAvailableByShopType(@Param("shopType") String shopType);
+
+
+    /**
      * 查找同一个大区，来返日期相同还未分配房间的参与人
      * @param userId
      * @return

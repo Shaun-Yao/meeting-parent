@@ -33,12 +33,7 @@ public class ParticipantServiceImpl extends ServiceImpl<ParticipantMapper, Parti
 
     @Override
     public List<Participant> listAvailable(String shopType) {
-        return null;
-    }
-
-    @Override
-    public List<Participant> listAvailable() {
-        return null;
+        return participantMapper.selectAvailableByShopType(shopType);
     }
 
 
