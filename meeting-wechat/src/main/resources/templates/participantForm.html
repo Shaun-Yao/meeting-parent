@@ -35,6 +35,15 @@
                                        th:value="${participant == null ? '' : participant.mobile}"/>
                             </div>
                         </div>
+                        <div class="weui-cell">
+                            <div class="weui-cell__hd"><label class="weui-label">身份证号码</label></div>
+                            <div class="weui-cell__bd">
+                                <input class="weui-input" placeholder="输入手机号码"
+                                       name="idNumber" id="idNumber"
+                                       minlength="18" maxlength="18" required="required"
+                                       th:value="${participant == null ? '' : participant.idNumber}"/>
+                            </div>
+                        </div>
 
                         <div class="weui-cell">
                             <div class="weui-cell__hd"><label class="weui-label">性别</label></div>

@@ -12,6 +12,7 @@ public class ParticipantVO {
     private  Long id;
     private Long userId;
     private String name;
+    private String idNumber;
     private String mobile;
     private SexEnum sex;
     private boolean attendTraining;

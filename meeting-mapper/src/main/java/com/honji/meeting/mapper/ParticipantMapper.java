@@ -22,7 +22,7 @@ public interface ParticipantMapper extends BaseMapper<Participant> {
 
 
     @Select({"<script>",
-            "SELECT participant.id, participant.user_id as userId, participant.name, ",
+            "SELECT participant.id, participant.user_id as userId, participant.name, id_number, ",
             "participant.mobile, participant.sex, participant.attend_training as attendTraining, participant.attend_hot_spring as attendHotSpring, ",
             "shop.type as shopType, shop.`code` as shopCode, shop.`name` as shopName, area.name as area, shop.small_area as smallArea FROM participant",
             "LEFT JOIN `user` ON participant.user_id = `user`.id",
@@ -36,6 +36,7 @@ public interface ParticipantMapper extends BaseMapper<Participant> {
             "AND (user_id like CONCAT('%', #{search}, '%') or participant.name like CONCAT('%', #{search}, '%')",
             " or shop.code like CONCAT('%', #{search}, '%') or shop.name like CONCAT('%', #{search}, '%'))",
             "</if>",
+            " order by shop.code desc",
             "</script>"})
     IPage<ParticipantVO> selectForIndex(Page<Participant> page, @Param("shopType") String shopType, @Param("search") String search);
 

@@ -26,6 +26,10 @@ public class Participant extends BaseEntity {
     private String name;
 
     private String mobile;
+    /**
+     * 身份证号码
+     */
+    private String idNumber;
 
     //@EnumValue
     private SexEnum sex;
