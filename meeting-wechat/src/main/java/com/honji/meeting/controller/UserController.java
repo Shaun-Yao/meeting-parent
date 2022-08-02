@@ -41,6 +41,9 @@ public class UserController {
     @Autowired
     private ISignUpSwitchService signUpSwitchService;
 
+    @Autowired
+    private ITimeConfigService timeConfigService;
+
     @GetMapping("/toApply")
     public String index(@RequestParam(required = false) String code,
                         @RequestParam(required = false)  String prefix, Model model) {
@@ -82,6 +85,7 @@ public class UserController {
 
         if (user != null) {
             //Shop shop = shopService.getById(user.getShopId());
+            TimeConfig timeConfig = timeConfigService.getConfig(user.getShopCode());
             QueryWrapper<Participant> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id", user.getId());
             List<Participant> participants = participantService.list(queryWrapper);
@@ -90,7 +94,9 @@ public class UserController {
             scheduleQueryWrapper.eq("user_id", user.getId());
             Schedule schedule = scheduleService.getOne(scheduleQueryWrapper);
 
-            //model.addAttribute("shopCode", shop.getCode());
+            if (timeConfig != null) {
+                model.addAttribute("timeConfig", timeConfig.getName());
+            }
             model.addAttribute("participants", participants);
             model.addAttribute("schedule", schedule);
         }
